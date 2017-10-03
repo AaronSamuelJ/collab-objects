@@ -1,37 +1,38 @@
 describe Author do
-  it 'has a name' do
-    # Setup
-    author = Author.new
-    author.name = "Hemingway"
+  let(:story){Story.new.tap{|s| s.name = "The Old Man and the Sea"}}
+  let(:author){Author.new.tap{|a| a.name = "Ernest Hemingway"}}
 
-    # Expectation
-    expect(author.name).to eq("Hemingway")
+  it 'has a name' do
+    expect(author.name).to eq("Ernest Hemingway")
   end
 
   context 'has many stories' do
     describe '#stories' do
       it 'has an empty array of stories when initialized' do
-        author = Author.new
-
         expect(author.stories).to match_array([])
+      end
+
+      it 'returns a frozen copy of the stories array' do
+        expect(author.stories).to be_frozen
       end
     end
 
     describe '#add_story' do
       it 'can add a story instances onto it' do
-        author = Author.new
-        story = Story.new
-
         author.add_story(story)
 
         expect(author.stories).to include(story)
       end
 
-      it 'only allows stories to be pushed onto it' do
-        author = Author.new
-        story = "Old Man and the Sea"
+      it "reciprocates assigning this author as the story's author" do
+        author.add_story(story)
 
-        expect{author.add_story(story)}.to raise_error(AssociationTypeMismatchError)
+        expect(story.author).to eq(author)
+      end
+      it 'only allows stories to be pushed onto it' do
+        author.add_story(story)
+
+        expect(story.author).to eq(author)
       end
     end
 
